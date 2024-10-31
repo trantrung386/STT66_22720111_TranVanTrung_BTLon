@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/style_login.css">
+    <script src="../js/jquery-3.7.1.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+    <script src="../js/trangchu.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css"
+    integrity="sha512-MV7K8+y+gLIBoVD59lQIYicR65iaqukzvf/nwasF0nqhPay5w/9lJmVM2hMDcnK1OnMGCdVK+iQrJ7lzPJQd1w=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="shortcut icon" href="../img/LOGO.png" />
+
+    <title>LOGIN</title>
+    <style>
+        /* Additional styling can be added here */
+        #myModal {
+            display: none; /* Initially hide the modal */
+            position: fixed;
+            z-index: 1050;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+        .error-message {
+            color: red;
+            font-size: 0.875em;
+            display: none; /* Ẩn thông báo lỗi mặc định */
+        }
+    </style>
+    <script>
+        $(document).ready(function() {
+            // Hiển thị modal khi nhấn nút Sign Up
+            $("#signup-btn").click(function(){
+                $("#myModal").modal('show'); // Hiển thị modal
+            });
+
+            // Kiểm tra và lưu tài khoản khi đăng ký
+            $('#signup-form').on('submit', function(event) {
+                event.preventDefault(); // Ngăn chặn gửi form
+
+                var fullName = $(this).find('input[name="full_name"]').val();
+                var username = $(this).find('input[name="username"]').val();
+                var password = $(this).find('input[name="password"]').val();
+                var errorMessage = $(this).find('.error-message');
+
+                // Kiểm tra điều kiện username
+                var usernameRegex = /^[A-Z][a-zA-Z0-9]*$/;
+                if (!usernameRegex.test(username)) {
+                    errorMessage.text('Usename phải bắt đầu bằng chữ cái in hoa và không chứa ký tự đặc biệt.').show();
+                    return;
+                }
+
+                // Kiểm tra điều kiện mật khẩu
+                if (password.length < 8 || !/\d/.test(password)) {
+                    errorMessage.text('Mật khẩu phải có ít nhất 8 ký tự và chứa ít nhất 1 số.').show();
+                } else {
+                    errorMessage.hide();
+                    // Lưu tài khoản vào Local Storage
+                    localStorage.setItem(username, JSON.stringify({ fullName: fullName, password: password }));
+                    alert('Tạo tài khoản thành công!');
+                    $("#myModal").modal('hide');
+                }
+            });
+
+            // Kiểm tra đăng nhập
+            $('#login-form').on('submit', function(event) {
+                event.preventDefault(); // Ngăn chặn gửi form
+
+                var username = $(this).find('input[name="username"]').val();
+                var password = $(this).find('input[name="password"]').val();
+
+                // Lấy thông tin tài khoản từ Local Storage
+                var storedUser = localStorage.getItem(username);
+                if (storedUser) {
+                    var userInfo = JSON.parse(storedUser);
+                    if (userInfo.password === password) {
+                        window.location.href = "../html/TrangChu.html"; // Điều hướng đến trang chủ
+                    } else {
+                        alert('Mật khẩu không chính xác!');
+                    }
+                } else {
+                    alert('Tài khoản không tồn tại!');
+                }
+            });
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <div class="d-flex justify-content-center h-100">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Sign In</h3>
+                    <div class="d-flex justify-content-end social_icon">
+                        <span><i class="fa-brands fa-facebook-f"></i></span>
+                        <span><i class="fa-brands fa-google"></i></span>
+                        <span><i class="fa-brands fa-twitter"></i></span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <form id="login-form">
+                        <div class="input-group form-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><i class="fas fa-user"></i></span>
+                            </div>
+                            <input type="text" class="form-control" placeholder="Username" name="username" required aria-label="Username">
+                        </div>
+                        <div class="input-group form-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><i class="fas fa-key"></i></span>
+                            </div>
+                            <input type="password" class="form-control" placeholder="Password" name="password" required aria-label="Password">
+                        </div>
+                        <div class="row align-items-center remember">
+                            <input type="checkbox"> Remember Me
+                        </div>
+                        <div class="form-group">
+                            <input type="submit" value="Login" class="btn float-right login_btn">
+                        </div>
+                    </form>
+                </div>
+                <div class="card-footer">
+                    <div class="d-flex justify-content-center links">
+                        Don't have an account? <a href="#" id="signup-btn" style="color: yellow;">Sign Up</a>
+                    </div>
+                    <div class="d-flex justify-content-center">
+                        <a href="#" style="color: black;">Forgot your password?</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Signup Form Modal -->
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Sign Up</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-center">Get started with your free account</p>
+                    <p>
+                        <a href="#" class="btn btn-block btn-twitter"> <i class="fab fa-twitter"></i>   Login with Twitter</a>
+                        <a href="#" class="btn btn-block btn-facebook"> <i class="fab fa-facebook-f"></i>   Login with Facebook</a>
+                    </p>
+                    <p class="divider-text">
+                        <span class="bg-light">OR</span>
+                    </p>
+                    <form id="signup-form">
+                        <div class="form-group input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"> <i class="fa fa-user"></i> </span>
+                            </div>
+                            <input name="username" class="form-control" placeholder="Username" type="text" required>
+                        </div>
+                        <div class="form-group input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"> <i class="fa fa-lock"></i> </span>
+                            </div>
+                            <input class="form-control" name="password" placeholder="Password" type="password" required>
+                            <div class="error-message">Mật khẩu phải có ít nhất 8 ký tự và chứa ít nhất 1 số.</div> <!-- Thông báo lỗi -->
+                        </div>
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-primary btn-block">Sign Up</button>
+                        </div>
+                        <p class="text-center">Have an account? <a href="../html/dangNhap.html" style="color: rgb(23, 78, 216);">Log In</a></p>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
